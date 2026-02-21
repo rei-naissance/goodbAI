@@ -172,7 +172,6 @@ src/
 ## Contributing
 
 - **Blocklist additions:** Edit `src/lib/blocklist.ts` to add new AI artist names
-- **Model updates:** Use the converter in `../Spot-if-AI/sonics-onnx-converter/` with newer SONICS checkpoints
 
 ## License
 
