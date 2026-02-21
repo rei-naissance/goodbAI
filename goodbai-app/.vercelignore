@@ -1,0 +1,2 @@
+# Ignore large ONNX model files (served from HuggingFace CDN in production)
+public/models/*.onnx
