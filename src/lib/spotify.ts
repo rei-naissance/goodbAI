@@ -27,6 +27,10 @@ export class SpotifyClient {
     this.accessToken = accessToken;
   }
 
+  private retryCount = 0;
+  private static readonly MAX_RETRIES = 3;
+  private static readonly MAX_RETRY_AFTER_SECONDS = 30;
+
   private async fetch<T>(
     endpoint: string,
     options: RequestInit = {}
@@ -70,10 +74,27 @@ export class SpotifyClient {
 
     if (res.status === 429) {
       const retryAfter = parseInt(res.headers.get("Retry-After") || "5", 10);
+
+      // If Spotify says to wait an unreasonable amount, don't retry
+      if (retryAfter > SpotifyClient.MAX_RETRY_AFTER_SECONDS) {
+        const minutes = Math.ceil(retryAfter / 60);
+        throw new Error(
+          `Spotify rate limit: try again in ~${minutes >= 60 ? Math.ceil(minutes / 60) + " hour(s)" : minutes + " minute(s)"}. This can happen after many rapid requests.`
+        );
+      }
+
+      this.retryCount++;
+      if (this.retryCount > SpotifyClient.MAX_RETRIES) {
+        this.retryCount = 0;
+        throw new Error("Spotify rate limit: too many retries. Please wait a moment and try again.");
+      }
+
       await new Promise((resolve) =>
         setTimeout(resolve, retryAfter * 1000)
       );
-      return this.fetch<T>(endpoint, options);
+      const result = await this.fetch<T>(endpoint, options);
+      this.retryCount = 0;
+      return result;
     }
 
     if (!res.ok) {

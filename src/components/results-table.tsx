@@ -12,17 +12,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  AlertTriangle,
-  ArrowDown,
-  ArrowUp,
-  CheckCircle2,
-  ExternalLink,
-  HelpCircle,
-  Trash2,
-} from "lucide-react";
+import { HelpCircle, AlertTriangle, CheckCircle2, ArrowDown, ArrowUp, Trash2, ExternalLink } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { ScanResult, RiskLevel, AudioSource } from "@/lib/types";
+import { motion, AnimatePresence } from "framer-motion";
+
+const MotionTableRow = motion.create ? motion.create(TableRow) : motion(TableRow as any);
 
 interface ResultsTableProps {
   results: ScanResult[];
@@ -138,21 +133,20 @@ export function ResultsTable({
   };
 
   return (
-    <div>
+    <section>
       {/* Actions bar */}
-      <div className="mb-4 flex flex-wrap items-center gap-3">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
         {/* Risk filter tabs */}
-        <div className="flex gap-1 rounded-lg border bg-muted p-1">
+        <nav aria-label="Risk Filters" className="flex gap-2 rounded-lg border bg-muted p-1 sm:p-2">
           {(["all", "high", "medium", "low", "unknown"] as const).map(
             (level) => (
               <button
                 key={level}
                 onClick={() => setFilter(level)}
-                className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
-                  filter === level
-                    ? "bg-background shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${filter === level
+                  ? "bg-background shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 {level === "all"
                   ? `All (${results.length})`
@@ -160,9 +154,9 @@ export function ResultsTable({
               </button>
             )
           )}
-        </div>
+        </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <Button variant="outline" size="sm" onClick={onSelectAllFlagged}>
             Select All Flagged
           </Button>
@@ -221,98 +215,108 @@ export function ResultsTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredAndSorted.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={8}
-                  className="py-8 text-center text-muted-foreground"
+            <AnimatePresence mode="popLayout">
+              {filteredAndSorted.length === 0 ? (
+                <MotionTableRow
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                 >
-                  No tracks match the current filter
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredAndSorted.map((result) => (
-                <TableRow
-                  key={result.track.id}
-                  className={
-                    result.selected ? "bg-destructive/5" : undefined
-                  }
-                >
-                  <TableCell>
-                    <Checkbox
-                      checked={result.selected}
-                      onCheckedChange={() =>
-                        onToggleSelect(result.track.id)
-                      }
-                    />
+                  <TableCell
+                    colSpan={8}
+                    className="py-12 text-center text-muted-foreground font-medium"
+                  >
+                    No tracks match the current filter
                   </TableCell>
-                  <TableCell>
-                    <RiskIcon level={result.riskLevel} />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      {result.track.album.images?.[0] && (
-                        <img
-                          src={
-                            result.track.album.images[
-                              result.track.album.images.length - 1
-                            ]?.url || result.track.album.images[0].url
-                          }
-                          alt=""
-                          className="h-10 w-10 rounded"
-                        />
-                      )}
-                      <span className="max-w-[200px] truncate font-medium">
-                        {result.track.name}
+                </MotionTableRow>
+              ) : (
+                filteredAndSorted.map((result, i) => (
+                  <MotionTableRow
+                    key={result.track.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -15 }}
+                    transition={{ delay: i * 0.05, type: "spring", stiffness: 100, damping: 20 }}
+                    className={
+                      result.selected ? "bg-destructive/10" : ""
+                    }
+                  >
+                    <TableCell>
+                      <Checkbox
+                        checked={result.selected}
+                        onCheckedChange={() =>
+                          onToggleSelect(result.track.id)
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <RiskIcon level={result.riskLevel} />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        {result.track.album.images?.[0] && (
+                          <img
+                            src={
+                              result.track.album.images[
+                                result.track.album.images.length - 1
+                              ]?.url || result.track.album.images[0].url
+                            }
+                            alt=""
+                            className="h-10 w-10 rounded"
+                          />
+                        )}
+                        <span className="max-w-[200px] truncate font-medium">
+                          {result.track.name}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="max-w-[150px] truncate text-sm text-muted-foreground">
+                        {result.track.artists
+                          .map((a) => a.name)
+                          .join(", ")}
                       </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="max-w-[150px] truncate text-sm text-muted-foreground">
-                      {result.track.artists
-                        .map((a) => a.name)
-                        .join(", ")}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <AIProbabilityBar
-                      score={result.audioScore}
-                      riskLevel={result.riskLevel}
-                      compact
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {result.blocklistMatch && (
-                      <Badge variant="destructive" className="text-xs">
-                        Blocklist
-                      </Badge>
-                    )}
-                    {result.audioScore !== null &&
-                      result.audioScore >= 0.4 && (
-                        <Badge variant="secondary" className="ml-1 text-xs">
-                          Audio
+                    </TableCell>
+                    <TableCell>
+                      <AIProbabilityBar
+                        score={result.audioScore}
+                        riskLevel={result.riskLevel}
+                        compact
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {result.blocklistMatch && (
+                        <Badge variant="destructive" className="text-xs">
+                          Blocklist
                         </Badge>
                       )}
-                  </TableCell>
-                  <TableCell>
-                    <AudioSourceBadge source={result.audioSource} />
-                  </TableCell>
-                  <TableCell>
-                    <a
-                      href={result.track.external_urls.spotify}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
+                      {result.audioScore !== null &&
+                        result.audioScore >= 0.4 && (
+                          <Badge variant="secondary" className="ml-1 text-xs">
+                            Audio
+                          </Badge>
+                        )}
+                    </TableCell>
+                    <TableCell>
+                      <AudioSourceBadge source={result.audioSource} />
+                    </TableCell>
+                    <TableCell>
+                      <a
+                        href={result.track.external_urls.spotify}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </TableCell>
+                  </MotionTableRow>
+                ))
+              )}
+            </AnimatePresence>
           </TableBody>
         </Table>
       </div>
-    </div>
+    </section>
   );
 }

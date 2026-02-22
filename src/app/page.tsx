@@ -13,6 +13,22 @@ import {
   AudioLines,
   ListChecks,
 } from "lucide-react";
+import { motion, Variants } from "framer-motion";
+
+const fadeUpVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] } },
+};
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.3,
+    },
+  },
+};
 
 function LandingContent() {
   const { isAuthenticated, login } = useAuth();
@@ -26,146 +42,166 @@ function LandingContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-transparent selection:bg-primary/30">
       {/* Hero Section */}
-      <div className="mx-auto max-w-5xl px-4 pt-20 pb-16 text-center sm:px-6 lg:px-8">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-card px-4 py-2 text-sm">
-          <Bot className="h-4 w-4 text-red-500" />
+      <motion.section
+        className="mx-auto max-w-5xl px-4 pt-32 pb-24 text-center sm:px-8"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        <motion.div variants={fadeUpVariants} className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm text-primary">
+          <Bot className="h-4 w-4" />
           AI music is flooding Spotify
-        </div>
+        </motion.div>
 
-        <h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-6xl">
+        <motion.h1 variants={fadeUpVariants} className="mb-8 text-5xl font-bold tracking-tight sm:text-7xl">
           Find & Remove{" "}
-          <span className="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
+          <span className="text-primary">
             AI-Generated
           </span>{" "}
+          <br className="hidden sm:block" />
           Music from Your Playlists
-        </h1>
+        </motion.h1>
 
-        <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground">
+        <motion.p variants={fadeUpVariants} className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground">
           goodbAI scans your Spotify playlists using community blocklists and
           the SONICS audio analysis model to detect songs created by Suno,
           Udio, and other AI music generators. Review results and remove
           tracks in one click.
-        </p>
+        </motion.p>
 
-        <Button size="lg" onClick={login} className="gap-2 text-lg">
-          <Music className="h-5 w-5" />
-          Connect Spotify
-          <ArrowRight className="h-5 w-5" />
-        </Button>
+        <motion.div variants={fadeUpVariants}>
+          <Button size="lg" onClick={login} className="h-16 rounded-full px-8 text-lg font-semibold shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:shadow-primary/40 bg-primary text-primary-foreground hover:bg-primary/90">
+            <Music className="mr-2 h-6 w-6" />
+            Connect Spotify
+            <ArrowRight className="ml-2 h-6 w-6" />
+          </Button>
+        </motion.div>
 
-        <p className="mt-4 text-xs text-muted-foreground">
+        <motion.p variants={fadeUpVariants} className="mt-8 text-xs text-muted-foreground">
           We only request access to read and modify your playlists. Your
           data never leaves your browser except for Spotify API calls.
-        </p>
-      </div>
+        </motion.p>
+      </motion.section>
 
       {/* How it Works */}
-      <div className="border-t bg-card/50 py-16">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-12 text-center text-3xl font-bold">
+      <section className="border-t border-border/50 bg-secondary/30 py-24">
+        <motion.div
+          className="mx-auto max-w-5xl px-4 sm:px-8"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVariants}
+        >
+          <motion.h2 variants={fadeUpVariants} className="mb-16 text-center text-4xl font-bold tracking-tight">
             How It Works
-          </h2>
+          </motion.h2>
 
-          <div className="grid gap-8 sm:grid-cols-3">
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <ListChecks className="h-7 w-7 text-primary" />
+          <div className="grid gap-12 sm:grid-cols-3">
+            <motion.article variants={fadeUpVariants} className="text-center group">
+              <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <ListChecks className="h-12 w-12 text-primary" />
               </div>
-              <h3 className="mb-2 text-lg font-semibold">
+              <h3 className="mb-4 text-xl font-semibold">
                 1. Select Playlists
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 Connect your Spotify account and choose which playlists to
                 scan. We support all your playlists including collaborative
                 ones.
               </p>
-            </div>
+            </motion.article>
 
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <AudioLines className="h-7 w-7 text-primary" />
+            <motion.article variants={fadeUpVariants} className="text-center group">
+              <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <AudioLines className="h-12 w-12 text-primary" />
               </div>
-              <h3 className="mb-2 text-lg font-semibold">
+              <h3 className="mb-4 text-xl font-semibold">
                 2. Two-Layer Detection
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 First, we cross-check against 100+ known AI artists. Then, the
                 SONICS ML model analyzes audio previews to catch unknown AI
                 tracks.
               </p>
-            </div>
+            </motion.article>
 
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <Trash2 className="h-7 w-7 text-primary" />
+            <motion.article variants={fadeUpVariants} className="text-center group">
+              <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <Trash2 className="h-12 w-12 text-primary" />
               </div>
-              <h3 className="mb-2 text-lg font-semibold">
+              <h3 className="mb-4 text-xl font-semibold">
                 3. Review & Remove
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 See each flagged track with its AI probability score. Select
                 the ones you want gone and remove them from your playlist.
               </p>
-            </div>
+            </motion.article>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </section>
 
       {/* Features */}
-      <div className="py-16">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-6 sm:grid-cols-3">
-            <div className="rounded-lg border bg-card p-6">
-              <Shield className="mb-3 h-6 w-6 text-green-500" />
-              <h3 className="mb-1 font-semibold">Privacy First</h3>
-              <p className="text-sm text-muted-foreground">
+      <section className="py-24">
+        <motion.div
+          className="mx-auto max-w-5xl px-4 sm:px-8"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVariants}
+        >
+          <div className="grid gap-8 sm:grid-cols-3">
+            <motion.article variants={fadeUpVariants} whileHover={{ y: -8 }} className="rounded-2xl border border-border/50 bg-card p-8 shadow-sm transition-all hover:shadow-md hover:border-border">
+              <Shield className="mb-6 h-8 w-8 text-primary" />
+              <h3 className="mb-2 text-lg font-semibold">Privacy First</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 Audio analysis runs in your browser using WebAssembly. No
                 audio data is sent to our servers.
               </p>
-            </div>
-            <div className="rounded-lg border bg-card p-6">
-              <Zap className="mb-3 h-6 w-6 text-yellow-500" />
-              <h3 className="mb-1 font-semibold">Fast Blocklist</h3>
-              <p className="text-sm text-muted-foreground">
+            </motion.article>
+            <motion.article variants={fadeUpVariants} whileHover={{ y: -8 }} className="rounded-2xl border border-border/50 bg-card p-8 shadow-sm transition-all hover:shadow-md hover:border-border">
+              <Zap className="mb-6 h-8 w-8 text-primary" />
+              <h3 className="mb-2 text-lg font-semibold">Fast Blocklist</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 Instant matching against a community-curated list of 100+
                 known AI artist names on Spotify.
               </p>
-            </div>
-            <div className="rounded-lg border bg-card p-6">
-              <AudioLines className="mb-3 h-6 w-6 text-blue-500" />
-              <h3 className="mb-1 font-semibold">SONICS ML Model</h3>
-              <p className="text-sm text-muted-foreground">
+            </motion.article>
+            <motion.article variants={fadeUpVariants} whileHover={{ y: -8 }} className="rounded-2xl border border-border/50 bg-card p-8 shadow-sm transition-all hover:shadow-md hover:border-border">
+              <AudioLines className="mb-6 h-8 w-8 text-primary" />
+              <h3 className="mb-2 text-lg font-semibold">SONICS ML Model</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 State-of-the-art audio classifier detects Suno and Udio
                 artifacts in 5-second preview snippets.
               </p>
-            </div>
+            </motion.article>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </section>
 
       {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="mx-auto max-w-5xl px-4 text-center text-sm text-muted-foreground sm:px-6 lg:px-8">
+      <footer className="border-t border-border/50 py-12">
+        <div className="mx-auto max-w-5xl px-4 text-center text-sm text-muted-foreground sm:px-8">
           <p>
             goodbAI is open source. Built with the{" "}
             <a
               href="https://github.com/awsaf49/sonics"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-foreground"
+              className="text-primary hover:underline"
             >
               SONICS
             </a>{" "}
             model and community AI artist lists.
           </p>
-          <p className="mt-2">
+          <p className="mt-4 opacity-75">
             Not affiliated with Spotify. Use at your own discretion.
           </p>
         </div>
       </footer>
-    </div>
+    </main>
   );
 }
 
