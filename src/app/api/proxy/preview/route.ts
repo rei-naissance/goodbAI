@@ -17,20 +17,22 @@ export async function GET(request: NextRequest) {
   }
 
   // Validate the URL is from an allowed audio host (Spotify or Deezer)
-  const allowedHosts = [
+  const allowedExactHosts = [
     "p.scdn.co",
     "audio-ak-spotify-com.akamaized.net",
     "audio-akp-spotify-com.akamaized.net",
     "preview.spotifycdn.com",
-    // Deezer preview CDN hosts
-    "cdns-preview-",  // cdns-preview-d.dzcdn.net, cdns-preview-e.dzcdn.net, etc.
-    "cdn-preview-",   // cdn-preview-d.dzcdn.net, etc.
-    ".dzcdn.net",
   ];
 
   try {
     const url = new URL(previewUrl);
-    if (!allowedHosts.some((host) => url.hostname.includes(host))) {
+    const isAllowed =
+      allowedExactHosts.includes(url.hostname) ||
+      (url.hostname.endsWith(".dzcdn.net") &&
+        (url.hostname.startsWith("cdns-preview-") ||
+          url.hostname.startsWith("cdn-preview-")));
+
+    if (!isAllowed) {
       return NextResponse.json(
         { error: "URL not from an allowed audio host" },
         { status: 403 }

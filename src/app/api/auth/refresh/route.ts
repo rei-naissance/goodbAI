@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
 
     const tokens = {
       access_token: tokenData.access_token,
-      refresh_token: tokenData.refresh_token || refreshToken,
       expires_at: Date.now() + tokenData.expires_in * 1000,
     };
 

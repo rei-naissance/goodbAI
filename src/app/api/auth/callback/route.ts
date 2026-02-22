@@ -8,6 +8,8 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   const error = searchParams.get("error");
+  const state = searchParams.get("state");
+  const storedState = request.cookies.get("spotify_oauth_state")?.value;
 
   if (error) {
     return NextResponse.redirect(
@@ -18,6 +20,12 @@ export async function GET(request: NextRequest) {
   if (!code) {
     return NextResponse.redirect(
       new URL("/?error=no_code", request.url)
+    );
+  }
+
+  if (!state || state !== storedState) {
+    return NextResponse.redirect(
+      new URL("/?error=state_mismatch", request.url)
     );
   }
 
@@ -48,11 +56,10 @@ export async function GET(request: NextRequest) {
 
     const tokenData = await tokenRes.json();
 
-    // Create the response — redirect to dashboard with tokens in hash fragment
-    // Using hash fragment so tokens never reach the server on subsequent navigations
+    // Create the response — redirect to dashboard with access token in hash fragment
+    // We purposefully omit the refresh token here so it isn't accessible to JS
     const tokens = {
       access_token: tokenData.access_token,
-      refresh_token: tokenData.refresh_token,
       expires_at: Date.now() + tokenData.expires_in * 1000,
     };
 
