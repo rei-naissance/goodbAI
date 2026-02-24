@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { AuthProvider } from "@/lib/auth-context";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
@@ -21,17 +22,19 @@ const fadeUpVariants: Variants = {
 };
 
 const containerVariants: Variants = {
-  hidden: { opacity: 0 },
+  hidden: {},
   visible: {
-    opacity: 1,
     transition: {
-      staggerChildren: 0.3,
+      staggerChildren: 0.15,
     },
   },
 };
 
 function LandingContent() {
   const { isAuthenticated, login } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   // If authenticated, redirect to dashboard
   if (isAuthenticated) {
@@ -41,12 +44,15 @@ function LandingContent() {
     return null;
   }
 
+  // SSR hydration matches "hidden", then we trigger "visible" on mount.
+  const animateInitial = "hidden";
+
   return (
     <main className="min-h-screen bg-transparent selection:bg-primary/30">
       {/* Hero Section */}
       <motion.section
         className="mx-auto max-w-5xl px-4 pt-32 pb-24 text-center sm:px-8"
-        initial="hidden"
+        initial={animateInitial}
         animate="visible"
         variants={containerVariants}
       >
@@ -89,9 +95,9 @@ function LandingContent() {
       <section className="border-t border-border/50 bg-secondary/30 py-24">
         <motion.div
           className="mx-auto max-w-5xl px-4 sm:px-8"
-          initial="hidden"
+          initial={animateInitial}
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, amount: 0.1 }}
           variants={containerVariants}
         >
           <motion.h2 variants={fadeUpVariants} className="mb-16 text-center text-4xl font-bold tracking-tight">
@@ -147,9 +153,9 @@ function LandingContent() {
       <section className="py-24">
         <motion.div
           className="mx-auto max-w-5xl px-4 sm:px-8"
-          initial="hidden"
+          initial={animateInitial}
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, amount: 0.1 }}
           variants={containerVariants}
         >
           <div className="grid gap-8 sm:grid-cols-3">

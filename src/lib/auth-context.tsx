@@ -44,11 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Create client synchronously from tokens — no timing gap
   const spotifyClient = useMemo(() => {
-    if (!tokens) {
-      console.log("[Auth] useMemo: tokens null, no client");
-      return null;
-    }
-    console.log("[Auth] useMemo: creating SpotifyClient with token:", tokens.access_token.substring(0, 10) + "...");
+    if (!tokens) return null;
     return new SpotifyClient(tokens.access_token, (newTokens) => {
       persistTokens(newTokens);
     });
@@ -56,8 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Initialize: check for tokens in URL hash (after OAuth callback) or localStorage
   useEffect(() => {
-    console.log("[Auth] Init effect running. Hash:", window.location.hash.substring(0, 50));
-
     // Check URL hash for tokens from OAuth callback
     if (window.location.hash.includes("tokens=")) {
       try {
@@ -67,7 +61,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const tokenStr = hashParams.get("tokens");
         if (tokenStr) {
           const t: SpotifyTokens = JSON.parse(decodeURIComponent(tokenStr));
-          console.log("[Auth] Tokens parsed from hash, expires_at:", new Date(t.expires_at).toISOString());
           persistTokens(t);
           // Clean up URL
           window.history.replaceState(null, "", window.location.pathname);
@@ -84,7 +77,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const t: SpotifyTokens = JSON.parse(stored);
-        console.log("[Auth] Found stored tokens. Expired?", t.expires_at < Date.now(), "expires_at:", new Date(t.expires_at).toISOString());
         // Check if token is expired or about to expire (within 5 min)
         if (t.expires_at > Date.now() + 5 * 60 * 1000) {
           setTokens(t);
