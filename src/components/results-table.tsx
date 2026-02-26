@@ -54,13 +54,13 @@ function RiskIcon({ level }: { level: RiskLevel }) {
 function AudioSourceBadge({ source }: { source: AudioSource }) {
   switch (source) {
     case "spotify_preview":
-      return <Badge variant="outline" className="text-[10px] text-green-600">Spotify</Badge>;
+      return <span className="border border-primary px-1 font-mono text-[9px] uppercase tracking-widest text-primary bg-primary/10">SP_PRVW</span>;
     case "deezer_preview":
-      return <Badge variant="outline" className="text-[10px] text-purple-600">Deezer</Badge>;
+      return <span className="border border-[#5555ff] px-1 font-mono text-[9px] uppercase tracking-widest text-[#5555ff] bg-[#5555ff]/10">DZ_PRVW</span>;
     case "playback_capture":
-      return <Badge variant="outline" className="text-[10px] text-blue-600">Playback</Badge>;
+      return <span className="border border-destructive px-1 font-mono text-[9px] uppercase tracking-widest text-destructive bg-destructive/10">PB_CAP</span>;
     case "none":
-      return <span className="text-[10px] text-muted-foreground">—</span>;
+      return <span className="text-[10px] text-muted-foreground font-mono">—</span>;
   }
 }
 
@@ -137,31 +137,31 @@ export function ResultsTable({
       {/* Actions bar */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
         {/* Risk filter tabs */}
-        <nav aria-label="Risk Filters" className="flex gap-2 rounded-lg border bg-muted p-1 sm:p-2">
+        <nav aria-label="Risk Filters" className="flex gap-px bg-border border-2 border-border p-px">
           {(["all", "high", "medium", "low", "unknown"] as const).map(
             (level) => (
               <button
                 key={level}
                 onClick={() => setFilter(level)}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${filter === level
-                  ? "bg-background shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                className={`px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-widest transition-colors ${filter === level
+                  ? "bg-primary text-black"
+                  : "bg-background text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                   }`}
               >
                 {level === "all"
-                  ? `All (${results.length})`
-                  : `${level.charAt(0).toUpperCase() + level.slice(1)} (${results.filter((r) => r.riskLevel === level).length})`}
+                  ? `ALL_FTR (${results.length})`
+                  : `${level.toUpperCase().substring(0, 3)} (${results.filter((r) => r.riskLevel === level).length})`}
               </button>
             )
           )}
         </nav>
 
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={onSelectAllFlagged}>
-            Select All Flagged
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={onSelectAllFlagged} className="rounded-none border-2 border-border hover:bg-muted font-mono text-[10px] uppercase tracking-widest px-3 h-8">
+            Select_Flagged
           </Button>
-          <Button variant="outline" size="sm" onClick={onDeselectAll}>
-            Deselect All
+          <Button variant="outline" size="sm" onClick={onDeselectAll} className="rounded-none border-2 border-border hover:bg-muted font-mono text-[10px] uppercase tracking-widest px-3 h-8">
+            Deselect_All
           </Button>
           {selectedCount > 0 && (
             <Button
@@ -169,49 +169,50 @@ export function ResultsTable({
               size="sm"
               onClick={handleRemove}
               disabled={removing}
+              className="rounded-none font-mono text-[10px] uppercase tracking-widest px-3 h-8"
             >
-              <Trash2 className="mr-2 h-4 w-4" />
+              <Trash2 className="mr-2 h-3 w-3" />
               {removing
-                ? "Removing..."
-                : `Remove ${selectedCount} track${selectedCount !== 1 ? "s" : ""}`}
+                ? "Terminating..."
+                : `Terminate [${selectedCount}]`}
             </Button>
           )}
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border">
+      <div className="border-2 border-border bg-card">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12"></TableHead>
-              <TableHead className="w-12">
-                <button onClick={() => toggleSort("risk")}>
-                  Risk
+          <TableHeader className="bg-muted border-b-2 border-border hover:bg-muted">
+            <TableRow className="hover:bg-muted border-none">
+              <TableHead className="w-12 border-r border-border font-mono text-[10px] uppercase tracking-widest text-muted-foreground"></TableHead>
+              <TableHead className="w-12 border-r border-border font-mono text-[10px] uppercase tracking-widest text-primary">
+                <button onClick={() => toggleSort("risk")} className="hover:text-primary transition-colors flex items-center justify-between w-full">
+                  RSK
                   <SortIcon field="risk" />
                 </button>
               </TableHead>
-              <TableHead>
-                <button onClick={() => toggleSort("name")}>
-                  Track
+              <TableHead className="border-r border-border font-mono text-[10px] uppercase tracking-widest text-primary">
+                <button onClick={() => toggleSort("name")} className="hover:text-primary transition-colors flex items-center justify-between w-full">
+                  TRK_NAME
                   <SortIcon field="name" />
                 </button>
               </TableHead>
-              <TableHead>
-                <button onClick={() => toggleSort("artist")}>
-                  Artist
+              <TableHead className="border-r border-border font-mono text-[10px] uppercase tracking-widest text-primary">
+                <button onClick={() => toggleSort("artist")} className="hover:text-primary transition-colors flex items-center justify-between w-full">
+                  ARTIST
                   <SortIcon field="artist" />
                 </button>
               </TableHead>
-              <TableHead>
-                <button onClick={() => toggleSort("score")}>
-                  AI Score
+              <TableHead className="border-r border-border font-mono text-[10px] uppercase tracking-widest text-primary">
+                <button onClick={() => toggleSort("score")} className="hover:text-primary transition-colors flex items-center justify-between w-full">
+                  AI_SCORE
                   <SortIcon field="score" />
                 </button>
               </TableHead>
-              <TableHead>Detection</TableHead>
-              <TableHead>Source</TableHead>
-              <TableHead className="w-12"></TableHead>
+              <TableHead className="border-r border-border font-mono text-[10px] uppercase tracking-widest text-muted-foreground">DETECTION</TableHead>
+              <TableHead className="border-r border-border font-mono text-[10px] uppercase tracking-widest text-muted-foreground">SOURCE</TableHead>
+              <TableHead className="w-12 font-mono text-[10px] uppercase tracking-widest text-muted-foreground"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -237,22 +238,24 @@ export function ResultsTable({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -15 }}
                     transition={{ delay: i * 0.05, type: "spring", stiffness: 100, damping: 20 }}
-                    className={
-                      result.selected ? "bg-destructive/10" : ""
-                    }
+                    className={`border-b border-border transition-colors hover:bg-primary/5 ${result.selected ? "bg-destructive/10" : ""
+                      }`}
                   >
-                    <TableCell>
+                    <TableCell className="border-r border-border/50">
                       <Checkbox
                         checked={result.selected}
                         onCheckedChange={() =>
                           onToggleSelect(result.track.id)
                         }
+                        className="rounded-none border-border"
                       />
                     </TableCell>
-                    <TableCell>
-                      <RiskIcon level={result.riskLevel} />
+                    <TableCell className="border-r border-border/50">
+                      <div className="flex justify-center">
+                        <RiskIcon level={result.riskLevel} />
+                      </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-r border-border/50">
                       <div className="flex items-center gap-3">
                         {result.track.album.images?.[0] && (
                           <img
@@ -262,42 +265,44 @@ export function ResultsTable({
                               ]?.url || result.track.album.images[0].url
                             }
                             alt=""
-                            className="h-10 w-10 rounded"
+                            className="h-8 w-8 grayscale"
                           />
                         )}
-                        <span className="max-w-[200px] truncate font-medium">
+                        <span className="max-w-[200px] truncate font-sans font-bold uppercase tracking-tight text-foreground">
                           {result.track.name}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <span className="max-w-[150px] truncate text-sm text-muted-foreground">
+                    <TableCell className="border-r border-border/50">
+                      <span className="max-w-[150px] truncate text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
                         {result.track.artists
                           .map((a) => a.name)
                           .join(", ")}
                       </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-r border-border/50 pt-3">
                       <AIProbabilityBar
                         score={result.audioScore}
                         riskLevel={result.riskLevel}
                         compact
                       />
                     </TableCell>
-                    <TableCell>
-                      {result.blocklistMatch && (
-                        <Badge variant="destructive" className="text-xs">
-                          Blocklist
-                        </Badge>
-                      )}
-                      {result.audioScore !== null &&
-                        result.audioScore >= 0.4 && (
-                          <Badge variant="secondary" className="ml-1 text-xs">
-                            Audio
-                          </Badge>
+                    <TableCell className="border-r border-border/50">
+                      <div className="flex gap-1">
+                        {result.blocklistMatch && (
+                          <span className="border border-destructive px-1 font-mono text-[9px] uppercase tracking-widest text-destructive bg-destructive/10">
+                            BLK_LST
+                          </span>
                         )}
+                        {result.audioScore !== null &&
+                          result.audioScore >= 0.4 && (
+                            <span className="border border-primary px-1 font-mono text-[9px] uppercase tracking-widest text-primary bg-primary/10">
+                              AUDIO
+                            </span>
+                          )}
+                      </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-r border-border/50">
                       <AudioSourceBadge source={result.audioSource} />
                     </TableCell>
                     <TableCell>
@@ -317,6 +322,6 @@ export function ResultsTable({
           </TableBody>
         </Table>
       </div>
-    </section>
+    </section >
   );
 }

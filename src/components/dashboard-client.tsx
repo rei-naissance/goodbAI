@@ -106,36 +106,36 @@ export function DashboardContent() {
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             >
               {/* Scan options */}
-              <div className="mb-8 flex flex-wrap items-center justify-end gap-x-6 gap-y-2">
-                <label className="flex cursor-pointer items-center gap-2 text-sm hover:text-primary transition-colors">
+              <div className="mb-8 flex flex-wrap items-center justify-end gap-x-6 gap-y-2 border-b border-border pb-4 font-mono uppercase tracking-wider">
+                <label className="flex cursor-pointer items-center gap-2 text-xs hover:text-primary transition-colors">
                   <input
                     type="checkbox"
                     checked={enableAudio}
                     onChange={(e) => setEnableAudio(e.target.checked)}
-                    className="rounded text-primary focus:ring-primary"
+                    className="appearance-none w-3 h-3 border border-primary checked:bg-primary"
                   />
-                  <Settings2 className="h-4 w-4 text-primary/70" />
-                  Audio analysis
+                  <Settings2 className="h-4 w-4 text-primary" />
+                  Structural Analysis
                 </label>
-                <label className="flex cursor-pointer items-center gap-2 text-sm hover:text-purple-400 transition-colors">
+                <label className="flex cursor-pointer items-center gap-2 text-xs hover:text-[#5555ff] transition-colors">
                   <input
                     type="checkbox"
                     checked={enableDeezer}
                     onChange={(e) => setEnableDeezer(e.target.checked)}
-                    className="rounded text-purple-500 focus:ring-purple-500"
+                    className="appearance-none w-3 h-3 border border-[#5555ff] checked:bg-[#5555ff]"
                   />
-                  <Music className="h-4 w-4 text-purple-500" />
-                  Deezer fallback
+                  <Music className="h-4 w-4 text-[#5555ff]" />
+                  Fallback Pipeline
                 </label>
-                <label className="flex cursor-pointer items-center gap-2 text-sm hover:text-green-400 transition-colors">
+                <label className="flex cursor-pointer items-center gap-2 text-xs hover:text-[#ff3333] transition-colors">
                   <input
                     type="checkbox"
                     checked={enablePlayback}
                     onChange={(e) => setEnablePlayback(e.target.checked)}
-                    className="rounded text-green-500 focus:ring-green-500"
+                    className="appearance-none w-3 h-3 border border-[#ff3333] checked:bg-[#ff3333]"
                   />
-                  <Music className="h-4 w-4 text-green-500" />
-                  Playback capture (Premium)
+                  <Music className="h-4 w-4 text-[#ff3333]" />
+                  Deep Capture (Premium)
                 </label>
               </div>
 
@@ -151,26 +151,27 @@ export function DashboardContent() {
               className="space-y-8"
             >
               {/* Header */}
-              <header className="flex items-center gap-4">
-                <Button variant="ghost" size="sm" onClick={handleBack} className="hover:bg-primary/10 hover:text-primary transition-colors">
+              <header className="flex items-center gap-4 bg-card border border-border p-4 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-primary/20 to-transparent"></div>
+                <Button variant="ghost" size="sm" onClick={handleBack} className="hover:bg-primary hover:text-black rounded-none transition-colors border-2 border-transparent hover:border-primary font-mono font-bold uppercase tracking-wider text-xs px-2">
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back
+                  Abort
                 </Button>
-                <Separator orientation="vertical" className="h-6 bg-border/50" />
+                <Separator orientation="vertical" className="h-8 bg-border w-[2px]" />
                 <div className="flex items-center gap-4">
                   {scanState.playlist.images?.[0] && (
                     <img
                       src={scanState.playlist.images[0].url}
                       alt={scanState.playlist.name}
-                      className="h-12 w-12 rounded-lg shadow-sm border border-border/50 object-cover"
+                      className="h-14 w-14 border border-primary object-cover"
                     />
                   )}
                   <div>
-                    <h2 className="text-xl font-bold tracking-tight">
+                    <h2 className="text-xl font-black uppercase tracking-tighter shadow-sm font-sans">
                       {scanState.playlist.name}
                     </h2>
-                    <p className="text-sm text-muted-foreground font-medium mt-1">
-                      {scanState.playlist.tracks.total} tracks
+                    <p className="text-xs text-primary font-mono mt-1 tracking-widest uppercase opacity-80">
+                      TARGET.TRACKS: {scanState.playlist.tracks.total}
                     </p>
                   </div>
                 </div>
@@ -220,17 +221,17 @@ export function DashboardContent() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="rounded-2xl border border-destructive/30 bg-destructive/10 p-8 text-center shadow-sm"
+                  className="rounded-none border-2 border-destructive bg-destructive/10 p-8 text-center"
                 >
-                  <p className="font-semibold text-destructive text-lg">
-                    {scanState.error}
+                  <p className="font-bold text-destructive text-lg font-mono uppercase tracking-widest">
+                    SYSTEM FAILURE: {scanState.error}
                   </p>
                   <Button
                     variant="outline"
-                    className="mt-8 border-destructive/20 hover:bg-destructive text-destructive hover:text-destructive-foreground transition-colors"
+                    className="mt-8 rounded-none border-2 border-destructive hover:bg-destructive text-destructive hover:text-black transition-colors font-mono uppercase tracking-widest text-xs"
                     onClick={handleBack}
                   >
-                    Go Back
+                    Reset Protocol
                   </Button>
                 </motion.div>
               )}
@@ -241,24 +242,28 @@ export function DashboardContent() {
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="py-24 text-center rounded-2xl border border-border/50 bg-card/50"
+                    className="py-24 text-center rounded-none border border-border bg-card relative overflow-hidden group"
                   >
+                    {/* A brutalist corner cut effect */}
+                    <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-primary/50 group-hover:border-primary transition-colors"></div>
+                    <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-primary/50 group-hover:border-primary transition-colors"></div>
+
                     <motion.div
                       animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
                       transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
                     >
                       <Music className="mx-auto mb-8 h-16 w-16 text-primary drop-shadow-lg" />
                     </motion.div>
-                    <h3 className="text-2xl font-bold tracking-tight">All Clean!</h3>
-                    <p className="mt-4 text-muted-foreground max-w-sm mx-auto">
-                      No AI-generated tracks were detected in this playlist. You have great taste!
+                    <h3 className="text-2xl font-black uppercase tracking-tighter">ALL CLEAR</h3>
+                    <p className="mt-4 text-primary font-mono max-w-sm mx-auto uppercase tracking-widest text-xs">
+                      No synthetic signatures detected within target parameters.
                     </p>
                     <Button
                       variant="outline"
-                      className="mt-8 rounded-full border-primary/30 hover:bg-primary/10 text-primary transition-all hover:scale-105"
+                      className="mt-8 rounded-none border-2 border-primary hover:bg-primary text-primary hover:text-black transition-all font-mono font-bold uppercase tracking-widest text-xs"
                       onClick={handleBack}
                     >
-                      Scan Another Playlist
+                      Initiate New Scan
                     </Button>
                   </motion.div>
                 )}

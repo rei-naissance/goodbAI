@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle, CheckCircle2, Eye, EyeOff, Music } from "lucide-react";
 
 interface StatsCardsProps {
@@ -24,47 +23,47 @@ export function StatsCards({
 }: StatsCardsProps) {
   const cards = [
     {
-      label: "Total Tracks",
+      label: "TOTAL_TRK",
       value: total,
       icon: Eye,
       color: "text-foreground",
     },
     {
-      label: "High Risk",
+      label: "HIGH_RISK",
       value: high,
       icon: AlertTriangle,
-      color: "text-red-500",
+      color: "text-destructive",
     },
     {
-      label: "Medium Risk",
+      label: "MED_RISK",
       value: medium,
       icon: AlertTriangle,
       color: "text-yellow-500",
     },
     {
-      label: "Clean",
+      label: "CLEAN_TRK",
       value: low,
       icon: CheckCircle2,
-      color: "text-green-500",
+      color: "text-primary",
     },
     {
-      label: "Blocklist Hits",
+      label: "BLK_HITS",
       value: blocklistMatches,
       icon: AlertTriangle,
-      color: "text-red-500",
+      color: "text-destructive",
     },
     ...(deezerFallbacks !== undefined && deezerFallbacks > 0
       ? [
-          {
-            label: "Deezer Fallback",
-            value: deezerFallbacks,
-            icon: Music,
-            color: "text-purple-500",
-          },
-        ]
+        {
+          label: "DZR_FBK",
+          value: deezerFallbacks,
+          icon: Music,
+          color: "text-[#5555ff]",
+        },
+      ]
       : []),
     {
-      label: "No Preview",
+      label: "NO_PRVW",
       value: noPreview,
       icon: EyeOff,
       color: "text-muted-foreground",
@@ -72,17 +71,17 @@ export function StatsCards({
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+    <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-px bg-border border-2 border-border">
       {cards.map((card) => (
-        <Card key={card.label}>
-          <CardContent className="flex items-center gap-3 p-4">
+        <div key={card.label} className="bg-card p-4 relative group hover:bg-muted/50 transition-colors">
+          <div className="flex items-center gap-3">
             <card.icon className={`h-5 w-5 ${card.color}`} />
             <div>
-              <p className="text-2xl font-bold">{card.value}</p>
-              <p className="text-xs text-muted-foreground">{card.label}</p>
+              <p className="text-3xl font-black font-mono tracking-tighter">{card.value}</p>
+              <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-widest">{card.label}</p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ))}
     </div>
   );

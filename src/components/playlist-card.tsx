@@ -14,7 +14,7 @@ export function PlaylistCard({ playlist, onClick }: PlaylistCardProps) {
     <Card
       role="button"
       tabIndex={0}
-      className="group relative cursor-pointer overflow-hidden border-border/40 bg-card/40 transition-all duration-300 hover:border-primary/50 hover:bg-card hover:shadow-md hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+      className="group relative cursor-pointer overflow-hidden border-2 border-border bg-card transition-all duration-300 hover:border-primary hover:-translate-y-1 hover:translate-x-1 hover:shadow-[-4px_4px_0_0_#1ed760] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-none"
       onClick={() => onClick(playlist)}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -23,43 +23,43 @@ export function PlaylistCard({ playlist, onClick }: PlaylistCardProps) {
         }
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0JyBoZWlnaHQ9JzQnPjxyZWN0IHdpZHRoPSc0JyBoZWlnaHQ9JzQnIGZpbGw9J25vbmUnLz48Y2lyY2xlIGN4PScxJyBjeT0nMScgcj0nMScgZmlsbD0nIzBlZDU1Micgb3BhY2l0eT0nMC4yJy8+PC9zdmc+')] opacity-0 transition-opacity duration-300 group-hover:opacity-100 mix-blend-overlay" />
       <CardContent className="relative flex items-center gap-4 p-4">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md shadow-sm">
+        <div className="relative h-16 w-16 shrink-0 overflow-hidden border border-border shadow-[2px_2px_0_0_var(--color-border)] group-hover:shadow-[2px_2px_0_0_#1ed760] transition-shadow">
           {playlist.images?.[0] ? (
             <img
               src={playlist.images[0].url}
               alt={playlist.name}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 group-hover:brightness-90"
+              className="h-full w-full object-cover grayscale transition-all duration-500 group-hover:scale-110 group-hover:grayscale-0"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-muted transition-colors duration-300 group-hover:bg-primary/10">
-              <Music className="h-8 w-8 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
+            <div className="flex h-full w-full items-center justify-center bg-muted transition-colors duration-300 group-hover:bg-primary/20">
+              <Music className="h-6 w-6 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
             </div>
           )}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 backdrop-blur-[2px] transition-opacity duration-300 group-hover:opacity-100">
-            <Activity className="h-6 w-6 text-primary" />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/80 opacity-0 backdrop-blur-[1px] transition-opacity duration-300 group-hover:opacity-100">
+            <Activity className="h-6 w-6 text-primary animate-pulse" />
           </div>
         </div>
 
         <div className="min-w-0 flex-1">
-          <h3 className="truncate font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
+          <h3 className="truncate font-black tracking-tighter uppercase text-foreground transition-colors group-hover:text-primary">
             {playlist.name}
           </h3>
-          <p className="mt-1 truncate text-xs font-medium text-muted-foreground">
-            <span className="text-foreground/80">{playlist.tracks.total}</span> tracks
+          <p className="mt-1 truncate text-xs font-mono uppercase tracking-widest text-muted-foreground group-hover:text-foreground/80 transition-colors">
+            {playlist.tracks.total} TRKS
             {playlist.owner?.display_name && (
-              <> &middot; {playlist.owner.display_name}</>
+              <> // {playlist.owner.display_name}</>
             )}
           </p>
           {(playlist.public === false || playlist.collaborative) && (
             <div className="mt-2 flex items-center gap-2">
               {!playlist.public && (
-                <Lock className="h-4 w-4 text-muted-foreground" />
+                <Lock className="h-3 w-3 text-destructive" />
               )}
               {playlist.collaborative && (
-                <span className="rounded-full bg-secondary px-2 py-1 text-[10px] font-medium text-secondary-foreground">
-                  Collaborative
+                <span className="border border-secondary-foreground/20 px-1 py-0.5 text-[9px] font-mono text-secondary-foreground uppercase tracking-widest bg-secondary/30">
+                  Collab
                 </span>
               )}
             </div>

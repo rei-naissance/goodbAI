@@ -93,11 +93,11 @@ export function PlaylistSelector({
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-8 shadow-sm">
-          <p className="text-destructive font-medium">{error}</p>
-          <Button variant="outline" onClick={loadPlaylists} className="mt-6 border-destructive/20 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors">
+        <div className="rounded-none border-2 border-destructive bg-destructive/10 p-8 shadow-[4px_4px_0_0_var(--color-destructive)]">
+          <p className="text-destructive font-mono font-bold uppercase tracking-widest text-sm">SYS_ERROR:: {error}</p>
+          <Button variant="outline" onClick={loadPlaylists} className="mt-6 rounded-none border-2 border-destructive text-destructive hover:bg-destructive hover:text-black transition-colors font-mono uppercase tracking-widest text-xs">
             <RefreshCw className="mr-2 h-4 w-4" />
-            Retry
+            RETRY_CONNECTION
           </Button>
         </div>
       </div>
@@ -106,14 +106,14 @@ export function PlaylistSelector({
 
   return (
     <section>
-      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Your Playlists</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Select a playlist to scan for AI-generated tracks
+      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b-2 border-primary pb-4">
+        <div className="relative">
+          <h2 className="text-4xl font-black uppercase tracking-tighter">Your Playlists</h2>
+          <p className="text-xs text-primary font-mono mt-1 uppercase tracking-widest opacity-80">
+            Select a target for structural scan
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={loadPlaylists} className="w-fit rounded-full hover:bg-primary/10 hover:text-primary transition-colors border-border/50">
+        <Button variant="outline" size="sm" onClick={loadPlaylists} className="w-fit rounded-none border-2 border-primary hover:bg-primary hover:text-black text-primary transition-colors font-mono uppercase tracking-widest text-xs">
           <RefreshCw className="mr-2 h-4 w-4" />
           Refresh
         </Button>
@@ -123,15 +123,16 @@ export function PlaylistSelector({
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative mb-8"
+        className="relative mb-8 group"
       >
-        <Search className="absolute left-4 top-1/2 h-6 w-6 -translate-y-1/2 text-muted-foreground/60" />
+        <div className="absolute top-0 left-0 w-2 h-full bg-primary transition-all group-focus-within:w-4"></div>
+        <Search className="absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground/60 transition-colors group-focus-within:text-primary" />
         <input
           type="text"
-          placeholder="Search playlists..."
+          placeholder="SEARCH PLAYLISTS_ _"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full rounded-2xl border border-border/50 bg-card/50 py-4 pl-12 pr-4 text-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
+          className="w-full rounded-none border-2 border-border bg-card/50 py-4 pl-14 pr-4 font-mono uppercase text-sm outline-none transition-colors focus:border-primary focus:bg-primary/5 focus:ring-0 shadow-sm"
         />
       </motion.div>
 
