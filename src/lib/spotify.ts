@@ -39,28 +39,28 @@ export class SpotifyClient {
       ? endpoint
       : `${SPOTIFY_API_BASE}${endpoint}`;
 
-    const res = await fetch(url, {
+    const fetchOptions: RequestInit = {
       ...options,
+      cache: "no-store", // Bypass Next.js aggressive caching for API calls
       headers: {
         Authorization: `Bearer ${this.accessToken}`,
         "Content-Type": "application/json",
         ...options.headers,
       },
-    });
+    };
+
+    const res = await fetch(url, fetchOptions);
 
     if (res.status === 401) {
       // Try to refresh the token
       const refreshed = await this.refreshToken();
       if (refreshed) {
         // Retry the request with the new token
-        const retryRes = await fetch(url, {
-          ...options,
-          headers: {
-            Authorization: `Bearer ${this.accessToken}`,
-            "Content-Type": "application/json",
-            ...options.headers,
-          },
-        });
+        fetchOptions.headers = {
+          ...fetchOptions.headers,
+          Authorization: `Bearer ${this.accessToken}`,
+        };
+        const retryRes = await fetch(url, fetchOptions);
         if (!retryRes.ok) {
           throw new Error(
             `Spotify API error: ${retryRes.status} ${retryRes.statusText}`
@@ -73,7 +73,21 @@ export class SpotifyClient {
     }
 
     if (res.status === 429) {
-      const retryAfter = parseInt(res.headers.get("Retry-After") || "5", 10);
+      const retryAfterHeader = res.headers.get("Retry-After");
+      let retryAfter = 5 * Math.pow(2, currentRetry); // Exponential backoff fallback: 5s, 10s, 20s
+
+      if (retryAfterHeader) {
+        const parsed = parseInt(retryAfterHeader, 10);
+        if (!isNaN(parsed)) {
+          retryAfter = parsed;
+        } else {
+          // Fallback if header is an HTTP Date string
+          const date = new Date(retryAfterHeader);
+          if (!isNaN(date.getTime())) {
+            retryAfter = Math.max(1, Math.ceil((date.getTime() - Date.now()) / 1000));
+          }
+        }
+      }
 
       // If Spotify says to wait an unreasonable amount, don't retry
       if (retryAfter > SpotifyClient.MAX_RETRY_AFTER_SECONDS) {
