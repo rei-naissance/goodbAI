@@ -27,13 +27,13 @@ export class SpotifyClient {
     this.accessToken = accessToken;
   }
 
-  private retryCount = 0;
   private static readonly MAX_RETRIES = 3;
   private static readonly MAX_RETRY_AFTER_SECONDS = 30;
 
   private async fetch<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    currentRetry = 0
   ): Promise<T> {
     const url = endpoint.startsWith("http")
       ? endpoint
@@ -83,18 +83,16 @@ export class SpotifyClient {
         );
       }
 
-      this.retryCount++;
-      if (this.retryCount > SpotifyClient.MAX_RETRIES) {
-        this.retryCount = 0;
+      const nextRetry = currentRetry + 1;
+      if (nextRetry > SpotifyClient.MAX_RETRIES) {
         throw new Error("Spotify rate limit: too many retries. Please wait a moment and try again.");
       }
 
       await new Promise((resolve) =>
         setTimeout(resolve, retryAfter * 1000)
       );
-      const result = await this.fetch<T>(endpoint, options);
-      this.retryCount = 0;
-      return result;
+
+      return this.fetch<T>(endpoint, options, nextRetry);
     }
 
     if (!res.ok) {
@@ -142,8 +140,11 @@ export class SpotifyClient {
 
     while (true) {
       const page = await this.getUserPlaylists(limit, offset);
-      playlists.push(...page.items);
-      if (playlists.length >= page.total) break;
+      if (page.items) {
+        playlists.push(...page.items.filter(Boolean));
+      }
+
+      if (playlists.length >= page.total || !page.items || page.items.length < limit) break;
       offset += limit;
     }
 
