@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import {
-  Music,
   ShieldAlert,
   Zap,
   TerminalSquare,
@@ -33,14 +32,13 @@ const containerVariants: Variants = {
 
 export function LandingContent() {
   const { isAuthenticated, login } = useAuth();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
-  if (isAuthenticated) {
-    if (typeof window !== "undefined") {
+  useEffect(() => {
+    if (isAuthenticated) {
       window.location.href = "/dashboard";
     }
+  }, [isAuthenticated]);
+
+  if (isAuthenticated) {
     return null;
   }
 
@@ -109,7 +107,7 @@ export function LandingContent() {
         >
           <motion.div variants={fadeUpVariants} className="mb-16 flex items-end gap-6 justify-between border-b border-border/50 pb-6">
             <h2 className="text-4xl font-black uppercase tracking-tighter">
-              EXECUTION <span className="text-primary font-mono font-light text-2xl">// PROTOCOL</span>
+              EXECUTION <span className="text-primary font-mono font-light text-2xl">{"//"} PROTOCOL</span>
             </h2>
           </motion.div>
 

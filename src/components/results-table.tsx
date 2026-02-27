@@ -1,7 +1,7 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
+
 import { Button } from "@/components/ui/button";
 import { AIProbabilityBar } from "@/components/ai-probability-bar";
 import {
@@ -17,7 +17,7 @@ import { useMemo, useState } from "react";
 import type { ScanResult, RiskLevel, AudioSource } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
 
-const MotionTableRow = motion.create ? motion.create(TableRow) : motion(TableRow as any);
+const MotionTableRow = motion.create ? motion.create(TableRow) : motion(TableRow as React.ElementType);
 
 interface ResultsTableProps {
   results: ScanResult[];
@@ -96,7 +96,7 @@ export function ResultsTable({
   };
 
   const filteredAndSorted = useMemo(() => {
-    let filtered =
+    const filtered =
       filter === "all"
         ? results
         : results.filter((r) => r.riskLevel === filter);

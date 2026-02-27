@@ -49,7 +49,7 @@ export function PlaylistCard({ playlist, onClick }: PlaylistCardProps) {
           <p className="mt-1 truncate text-xs font-mono uppercase tracking-widest text-muted-foreground group-hover:text-foreground/80 transition-colors">
             {playlist.tracks.total} TRKS
             {playlist.owner?.display_name && (
-              <> // {playlist.owner.display_name}</>
+              <> {"//"} {playlist.owner.display_name}</>
             )}
           </p>
           {(playlist.public === false || playlist.collaborative) && (

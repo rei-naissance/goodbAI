@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { PlaylistCard } from "@/components/playlist-card";
-import { Loader2, RefreshCw, Search, Music } from "lucide-react";
+import { RefreshCw, Search, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { SpotifyPlaylist } from "@/lib/types";
 import { motion, Variants } from "framer-motion";
@@ -28,30 +28,25 @@ const itemVariants: Variants = {
 export function PlaylistSelector({
   onSelectPlaylist,
 }: PlaylistSelectorProps) {
-  const { spotifyClient, tokens } = useAuth();
+  const { spotifyClient } = useAuth();
   const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [debugInfo, setDebugInfo] = useState<string>("Waiting for client...");
-
   const loadPlaylists = async () => {
     if (!spotifyClient) {
-      setDebugInfo("spotifyClient is null — cannot load");
+      console.log("spotifyClient is null — cannot load");
       return;
     }
     setLoading(true);
     setError(null);
-    setDebugInfo("Fetching playlists from Spotify API...");
 
     try {
       const pl = await spotifyClient.getAllUserPlaylists();
-      setDebugInfo(`Loaded ${pl.length} playlists`);
       setPlaylists(pl);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to load playlists";
       console.error("Playlist load error:", err);
-      setDebugInfo(`Error: ${msg}`);
       setError(msg);
     } finally {
       setLoading(false);
@@ -60,12 +55,7 @@ export function PlaylistSelector({
 
   useEffect(() => {
     if (spotifyClient) {
-      setDebugInfo("Client ready — loading playlists...");
       loadPlaylists();
-    } else {
-      setDebugInfo(
-        tokens ? "Tokens exist but client not created yet" : "No tokens available"
-      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spotifyClient]);

@@ -14,6 +14,7 @@ const SPOTIFY_API_BASE = "https://api.spotify.com/v1";
 export class SpotifyClient {
   private accessToken: string;
   private onTokenRefresh?: (tokens: SpotifyTokens) => void;
+  private refreshPromise: Promise<boolean> | null = null;
 
   constructor(
     accessToken: string,
@@ -91,9 +92,10 @@ export class SpotifyClient {
 
       // If Spotify says to wait an unreasonable amount, don't retry
       if (retryAfter > SpotifyClient.MAX_RETRY_AFTER_SECONDS) {
+        const hours = retryAfter / 3600;
         const minutes = Math.ceil(retryAfter / 60);
         throw new Error(
-          `Spotify rate limit: try again in ~${minutes >= 60 ? Math.ceil(minutes / 60) + " hour(s)" : minutes + " minute(s)"}. This can happen after many rapid requests.`
+          `Spotify rate limit active. Try again in ~${hours >= 1 ? (Math.round(hours * 10) / 10) + " hour(s)" : minutes + " minute(s)"}. This happens after many requests.`
         );
       }
 
@@ -120,16 +122,22 @@ export class SpotifyClient {
   }
 
   private async refreshToken(): Promise<boolean> {
-    try {
-      const res = await fetch("/api/auth/refresh", { method: "POST" });
-      if (!res.ok) return false;
-      const tokens: SpotifyTokens = await res.json();
-      this.accessToken = tokens.access_token;
-      this.onTokenRefresh?.(tokens);
-      return true;
-    } catch {
-      return false;
-    }
+    if (this.refreshPromise) return this.refreshPromise;
+    this.refreshPromise = (async () => {
+      try {
+        const res = await fetch("/api/auth/refresh", { method: "POST" });
+        if (!res.ok) return false;
+        const tokens: SpotifyTokens = await res.json();
+        this.accessToken = tokens.access_token;
+        this.onTokenRefresh?.(tokens);
+        return true;
+      } catch {
+        return false;
+      } finally {
+        this.refreshPromise = null;
+      }
+    })();
+    return this.refreshPromise;
   }
 
   // ─── User ──────────────────────────────────────────────────
@@ -160,6 +168,8 @@ export class SpotifyClient {
 
       if (playlists.length >= page.total || !page.items || page.items.length < limit) break;
       offset += limit;
+      // Protect against rate limits for rapid pagination
+      await new Promise(resolve => setTimeout(resolve, 150));
     }
 
     return playlists;
@@ -193,6 +203,8 @@ export class SpotifyClient {
       }
       if (tracks.length >= page.total || page.items.length < limit) break;
       offset += limit;
+      // Protect against rate limits for rapid pagination
+      await new Promise(resolve => setTimeout(resolve, 150));
     }
 
     return tracks;
@@ -217,6 +229,10 @@ export class SpotifyClient {
           tracks: batch.map((uri) => ({ uri })),
         }),
       });
+      if (batches.length > 1) {
+        // Delay between batch deletes
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
     }
   }
 
@@ -240,6 +256,10 @@ export class SpotifyClient {
         method: "DELETE",
         body: JSON.stringify({ ids: batch }),
       });
+      if (batches.length > 1) {
+        // Delay between batch deletes
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
     }
   }
 }
